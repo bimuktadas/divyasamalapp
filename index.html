@@ -1,18 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#d946ef" />
-    <meta
-      name="description"
-      content="Gf Webapp - Journal, Memories, and Tickets"
-    />
-    <title>Gf Webapp</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GF Webapp</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="login-screen">
+      <h1>Login</h1>
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p id="login-error" class="error"></p>
+    </div>
+
+    <div id="main-app" style="display: none;">
+      <h2 id="welcome"></h2>
+
+      <section>
+        <h3>Journals</h3>
+        <input type="text" id="journal-title" placeholder="Title" />
+        <textarea id="journal-content" placeholder="Write something..."></textarea>
+        <button onclick="addJournal()">Add Entry</button>
+        <div id="journal-list"></div>
+      </section>
+
+      <section>
+        <h3>Memories</h3>
+        <input type="text" id="memory-caption" placeholder="Caption" />
+        <input type="text" id="memory-url" placeholder="Image URL" />
+        <button onclick="addMemory()">Add Memory</button>
+        <div id="memory-gallery" class="grid"></div>
+      </section>
+
+      <section>
+        <h3>Raise a Ticket</h3>
+        <textarea id="ticket-msg" placeholder="What do you want me to do?"></textarea>
+        <select id="priority">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+        <button onclick="submitTicket()">Submit Ticket</button>
+        <div id="ticket-list"></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>
