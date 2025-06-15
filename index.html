@@ -2,16 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Divya Samal Care App</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="memories.html">Memories</a>
-    <a href="journals.html">Journals</a>
-    <a href="tickets.html">Tickets</a>
-  </nav>
-  <h2 style="text-align:center;">Welcome to Our Love Webapp 💖</h2>
+  <header>
+    <h1>Divya Samal Care App</h1>
+    <p class="tagline">Dibbu's special place</p>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="memories.html">Memories</a>
+      <a href="journal.html">Journal</a>
+      <a href="support.html">Support</a>
+      <a href="games.html">Games</a>
+    </nav>
+  </header>
+  <main>
+    <section class="welcome">
+      <h2>Welcome back, Love! 💕</h2>
+      <p>Ready for some fun? Choose your adventure below!</p>
+      <p><strong>Online</strong> Last login: 6/15/2025</p>
+    </section>
+    <section class="stats">
+      <div>0<br><span>Games Played</span></div>
+      <div>0<br><span>Memories Saved</span></div>
+      <div>0<br><span>Personal Notes</span></div>
+      <div>0<br><span>Open Tickets</span></div>
+    </section>
+    <section class="widgets">
+      <div class="widget">
+        <h3>Fun & Games</h3>
+        <p>Interactive games and entertainment</p>
+        <ul>
+          <li>🎮 Love Quiz</li>
+          <li>🖌️ Drawing Board</li>
+        </ul>
+      </div>
+      <div class="widget">
+        <h3>Our Memories</h3>
+        <p>Photos and special moments</p>
+        <div class="memory-thumbs">
+          <img src="https://placekitten.com/100/60" />
+          <img src="https://placekitten.com/101/60" />
+        </div>
+        <button class="memory-btn">+ Add New Memory</button>
+      </div>
+      <div class="widget">
+        <h3>Personal Journal</h3>
+        <p>Your thoughts and notes</p>
+        <p><strong>Today's Thoughts</strong><br>Had the most amazing day today…<br><small>2 hours ago</small></p>
+        <button class="journal-btn">✍️ Write New Entry</button>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
