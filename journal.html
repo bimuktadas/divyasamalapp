@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Journal - Divya Samal Care App</title>
+  <link href="styles.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">My Journal</h1>
+    <button onclick="openJournalModal()" class="bg-pink-500 text-white px-4 py-2 rounded">✍️ Write New Entry</button>
+  </header>
+
+  <main class="p-6">
+    <p class="mb-4">Your thoughts and reflections 💖</p>
+    <div id="journal-list" class="space-y-4 bg-white p-4 rounded shadow">
+      <p>You have no journal entries yet.</p>
+    </div>
+  </main>
+
+  <!-- Journal Modal -->
+  <div id="journalModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded shadow-lg w-full max-w-xl relative">
+      <button class="absolute top-2 right-3 text-xl" onclick="closeJournalModal()">×</button>
+      <h2 class="text-xl font-bold mb-4">New Journal Entry 📓</h2>
+      
+      <label class="block mb-2">Title</label>
+      <input type="text" id="journalTitle" class="w-full p-2 border rounded mb-4" placeholder="e.g. Today’s Magic Moment..." />
+
+      <label class="block mb-2">Thoughts</label>
+      <textarea id="journalText" rows="4" class="w-full p-2 border rounded mb-4" placeholder="What’s on your mind today?"></textarea>
+
+      <div class="flex justify-end gap-2">
+        <button class="px-4 py-2 bg-gray-300 rounded" onclick="closeJournalModal()">Cancel</button>
+        <button class="px-4 py-2 bg-pink-500 text-white rounded" onclick="saveJournal()">Save Entry</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openJournalModal() {
+      document.getElementById('journalModal').classList.remove('hidden');
+    }
+    function closeJournalModal() {
+      document.getElementById('journalModal').classList.add('hidden');
+    }
+    function saveJournal() {
+      const title = document.getElementById('journalTitle').value;
+      const text = document.getElementById('journalText').value;
+      if (!title || !text) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      const list = document.getElementById('journal-list');
+      if (list.innerHTML.includes("no journal entries")) {
+        list.innerHTML = "";
+      }
+
+      const entryHTML = `
+        <div class="border-t pt-2">
+          <strong>${title}</strong>
+          <p class="text-sm text-gray-700 mt-1">${text}</p>
+          <p class="text-xs text-gray-500 mt-1">${new Date().toLocaleString()}</p>
+        </div>`;
+      list.innerHTML += entryHTML;
+
+      closeJournalModal();
+    }
+  </script>
+</body>
+</html>
