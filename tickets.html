@@ -2,16 +2,87 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tickets</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Tickets - Divya Samal Care App</title>
+  <link href="styles.css" rel="stylesheet"/>
 </head>
-<body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="memories.html">Memories</a>
-    <a href="journals.html">Journals</a>
-    <a href="tickets.html">Tickets</a>
-  </nav>
-  <h2 style="text-align:center;">Raise a Love Ticket 📝</h2>
+<body class="bg-gray-100 text-gray-900">
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">My Tickets</h1>
+    <button onclick="openTicketModal()" class="bg-pink-500 text-white px-4 py-2 rounded">+ New Ticket</button>
+  </header>
+
+  <main class="p-6">
+    <p class="mb-4">Submit and track your requests</p>
+    <div id="ticket-list" class="bg-white p-4 rounded shadow">
+      <p>You have no open tickets.</p>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="ticketModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-cream p-6 rounded shadow-lg w-full max-w-xl relative">
+      <button class="absolute top-2 right-3 text-xl" onclick="closeTicketModal()">×</button>
+      <h2 class="text-xl font-bold mb-4">Create New Ticket 🎟️</h2>
+      
+      <label class="block mb-2">Ticket Title</label>
+      <input type="text" id="ticketTitle" class="w-full p-2 border rounded mb-4" placeholder="Brief description of your request..." />
+
+      <label class="block mb-2">Description</label>
+      <textarea id="ticketDescription" rows="4" class="w-full p-2 border rounded mb-4" placeholder="Please provide detailed information about your request or issue..."></textarea>
+
+      <div class="flex gap-4 mb-4">
+        <div class="flex-1">
+          <label class="block mb-2">Priority</label>
+          <select id="ticketPriority" class="w-full p-2 border rounded">
+            <option>Low Priority</option>
+            <option selected>Medium Priority</option>
+            <option>High Priority</option>
+          </select>
+        </div>
+        <div class="flex-1">
+          <label class="block mb-2">Category</label>
+          <select id="ticketCategory" class="w-full p-2 border rounded">
+            <option>Travel</option>
+            <option>Work</option>
+            <option>Take me out on a Date</option>
+            <option>Dibbu hungry</option>
+            <option>Too much Pada</option>
+            <option>Not enough Kisses</option>
+            <option>Need pampering</option>
+            <option>Need sexy time</option>
+            <option>Others</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button class="px-4 py-2 bg-gray-300 rounded" onclick="closeTicketModal()">Cancel</button>
+        <button class="px-4 py-2 bg-pink-500 text-white rounded" onclick="createTicket()">Create Ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openTicketModal() {
+      document.getElementById('ticketModal').classList.remove('hidden');
+    }
+    function closeTicketModal() {
+      document.getElementById('ticketModal').classList.add('hidden');
+    }
+    function createTicket() {
+      const title = document.getElementById('ticketTitle').value;
+      const desc = document.getElementById('ticketDescription').value;
+      const prio = document.getElementById('ticketPriority').value;
+      const cat = document.getElementById('ticketCategory').value;
+      if (!title || !desc) {
+        alert("Please fill in all fields.");
+        return;
+      }
+      const list = document.getElementById('ticket-list');
+      list.innerHTML += `<div class="border-t mt-4 pt-2"><strong>${title}</strong> (${cat}, ${prio})<p>${desc}</p></div>`;
+      closeTicketModal();
+    }
+  </script>
 </body>
 </html>
