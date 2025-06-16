@@ -2,43 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Memories - Divya Samal Care App</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Memories 📸</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
   <style>
-    .carousel { display: flex; overflow-x: auto; gap: 10px; padding: 1rem; }
-    .carousel img { height: 200px; border-radius: 10px; box-shadow: 0 0 5px #aaa; }
+    body { font-family: 'Quicksand', sans-serif; margin: 0; background: #fff0f5; }
+    .header, .nav a { background: #ff6fa3; color: white; }
+    .header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .nav a { margin: 0 1rem; text-decoration: none; font-weight: bold; }
+    .container { padding: 2rem; }
+    .memories { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .memories img { width: 150px; height: 150px; object-fit: cover; border-radius: 1rem; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+    input[type="file"] { margin-top: 1rem; }
   </style>
 </head>
 <body>
-  <header>
-    <h2>Our Memories 📸</h2>
-    <nav>
+  <div class="header">
+    <h2>💖 Memories</h2>
+    <div class="nav">
       <a href="index.html">Home</a>
       <a href="journal.html">Journals</a>
-      <a href="tickets.html">Support</a>
-    </nav>
-  </header>
+      <a href="memories.html">Memories</a>
+      <a href="tickets.html">Tickets</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
 
-  <div class="widget">
-    <input type="file" id="imageUpload" accept="image/*" multiple />
-    <div class="carousel" id="carousel"></div>
+  <div class="container">
+    <h3>Upload your sweet moments 💖</h3>
+    <input type="file" accept="image/*" onchange="uploadImage(event)" />
+    <div class="memories" id="memoriesList"></div>
   </div>
 
   <script>
-    const imageUpload = document.getElementById('imageUpload');
-    const carousel = document.getElementById('carousel');
+    function uploadImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const images = JSON.parse(localStorage.getItem("memories") || "[]");
+        images.push(e.target.result);
+        localStorage.setItem("memories", JSON.stringify(images));
+        renderImages();
+      };
+      reader.readAsDataURL(file);
+    }
 
-    imageUpload.addEventListener('change', () => {
-      [...imageUpload.files].forEach(file => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const img = document.createElement('img');
-          img.src = reader.result;
-          carousel.appendChild(img);
-        };
-        reader.readAsDataURL(file);
+    function renderImages() {
+      const images = JSON.parse(localStorage.getItem("memories") || "[]");
+      const container = document.getElementById("memoriesList");
+      container.innerHTML = "";
+      images.forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        container.appendChild(img);
       });
-    });
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      location.href = "login.html";
+    }
+
+    renderImages();
   </script>
 </body>
 </html>
