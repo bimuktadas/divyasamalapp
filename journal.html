@@ -5,14 +5,59 @@
   <title>Journals 💌</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Quicksand', sans-serif; margin: 0; background: #fff0f5; }
-    .header, .nav a { background: #ff6fa3; color: white; }
-    .header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
-    .nav a { margin: 0 1rem; text-decoration: none; font-weight: bold; }
-    .container { padding: 2rem; }
-    textarea { width: 100%; height: 100px; font-family: inherit; margin-bottom: 1rem; }
-    button { padding: 0.5rem 1rem; background: #ff6fa3; color: white; border: none; border-radius: 6px; }
-    .entry { background: #fff; margin: 1rem 0; padding: 1rem; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    body {
+      font-family: 'Quicksand', sans-serif;
+      margin: 0;
+      background: #fff0f5;
+    }
+    .header, .nav a {
+      background: #ff6fa3;
+      color: white;
+    }
+    .header {
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .container {
+      padding: 2rem;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      font-family: inherit;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      padding: 0.5rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background: #ff6fa3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .entry {
+      background: #fff;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    select {
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
   </style>
 </head>
 <body>
@@ -32,6 +77,16 @@
     <textarea id="journalInput" placeholder="Dear diary... 📝"></textarea>
     <br />
     <button onclick="addJournal()">Add Entry</button>
+
+    <div style="margin-top: 2rem;">
+      <label for="filterUser">Filter by user: </label>
+      <select id="filterUser" onchange="load()">
+        <option value="all">All</option>
+        <option value="dibbu">dibbu</option>
+        <option value="bimu">bimu</option>
+      </select>
+    </div>
+
     <div id="journalList"></div>
   </div>
 
@@ -40,22 +95,40 @@
 
     function load() {
       const journals = JSON.parse(localStorage.getItem("journals") || "[]");
+      const filterUser = document.getElementById("filterUser")?.value;
       list.innerHTML = "";
-      journals.reverse().forEach(text => {
+
+      journals.reverse().forEach((entry, index) => {
+        if (filterUser && filterUser !== "all" && entry.user !== filterUser) return;
+
         const div = document.createElement("div");
         div.className = "entry";
-        div.textContent = text;
+        div.innerHTML = `
+          <strong>${entry.user}</strong> • <small>${entry.time}</small><br />
+          ${entry.text}<br /><br />
+          <button onclick="deleteJournal(${journals.length - 1 - index})">🗑️ Delete</button>
+        `;
         list.appendChild(div);
       });
     }
 
     function addJournal() {
       const input = document.getElementById("journalInput").value.trim();
-      if (!input) return;
+      const user = localStorage.getItem("loggedInUser");
+      if (!input || !user) return;
+
       const entries = JSON.parse(localStorage.getItem("journals") || "[]");
-      entries.push(input);
+      const now = new Date().toLocaleString();
+      entries.push({ text: input, user, time: now });
       localStorage.setItem("journals", JSON.stringify(entries));
       document.getElementById("journalInput").value = "";
+      load();
+    }
+
+    function deleteJournal(index) {
+      const entries = JSON.parse(localStorage.getItem("journals") || "[]");
+      entries.splice(index, 1);
+      localStorage.setItem("journals", JSON.stringify(entries));
       load();
     }
 
@@ -64,7 +137,7 @@
       location.href = "login.html";
     }
 
-    load();
+    window.onload = load;
   </script>
 </body>
 </html>
