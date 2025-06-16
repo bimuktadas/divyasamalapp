@@ -2,65 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Support - Divya Samal Care App</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Tickets 🎫</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Quicksand', sans-serif; margin: 0; background: #fff0f5; }
+    .header, .nav a { background: #ff6fa3; color: white; }
+    .header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .nav a { margin: 0 1rem; text-decoration: none; font-weight: bold; }
+    .container { padding: 2rem; }
+    select, textarea { width: 100%; padding: 0.5rem; margin-top: 1rem; font-family: inherit; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; background: #ff6fa3; color: white; border: none; border-radius: 6px; }
+    .ticket { background: #fff; padding: 1rem; margin-top: 1rem; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+  </style>
 </head>
 <body>
-  <header>
-    <h2>Raise a Ticket 💌</h2>
-    <nav>
+  <div class="header">
+    <h2>🎫 GF Complaints</h2>
+    <div class="nav">
       <a href="index.html">Home</a>
       <a href="journal.html">Journals</a>
       <a href="memories.html">Memories</a>
-    </nav>
-  </header>
+      <a href="tickets.html">Tickets</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
 
-  <div class="widget">
-    <input type="text" id="ticketTitle" placeholder="Issue title" />
-    <select id="ticketCategory">
-      <option>Travel</option>
-      <option>Work</option>
-      <option>Take me out on a Date</option>
-      <option>Dibbu hungry</option>
-      <option>Too much Pada</option>
-      <option>Not enough Kisses</option>
-      <option>Need pampering</option>
-      <option>Need sexy time</option>
-      <option>Others</option>
+  <div class="container">
+    <h3>Create a Ticket 🙃</h3>
+    <select id="category">
+      <option>Travel 🧳</option>
+      <option>Work 💻</option>
+      <option>Take me out on a Date 💕</option>
+      <option>Dibbu hungry 🍱</option>
+      <option>Too much Pada 📚</option>
+      <option>Not enough Kisses 😘</option>
+      <option>Need pampering 🧖‍♀️</option>
+      <option>Need sexy time 🔥</option>
+      <option>Others 💭</option>
     </select>
-    <select id="ticketPriority">
-      <option>Low</option>
-      <option>Medium</option>
-      <option>High</option>
+    <select id="priority">
+      <option>High 🔥</option>
+      <option>Medium ⚠️</option>
+      <option>Low 💤</option>
     </select>
-    <textarea id="ticketDetails" placeholder="Describe the issue..."></textarea>
-    <button onclick="submitTicket()">Submit</button>
+    <textarea id="description" placeholder="Write your sweet complaints here... 😅"></textarea>
+    <button onclick="addTicket()">Submit Ticket</button>
+
     <div id="ticketList"></div>
   </div>
 
   <script>
-    function submitTicket() {
-      const title = document.getElementById('ticketTitle').value;
-      const cat = document.getElementById('ticketCategory').value;
-      const pri = document.getElementById('ticketPriority').value;
-      const details = document.getElementById('ticketDetails').value;
-      if (title && details) {
-        const tickets = JSON.parse(localStorage.getItem("tickets") || "[]");
-        tickets.push({ title, cat, pri, details, date: new Date().toLocaleString() });
-        localStorage.setItem("tickets", JSON.stringify(tickets));
-        renderTickets();
-      }
+    function addTicket() {
+      const cat = document.getElementById("category").value;
+      const pri = document.getElementById("priority").value;
+      const desc = document.getElementById("description").value.trim();
+      if (!desc) return;
+
+      const tickets = JSON.parse(localStorage.getItem("tickets") || "[]");
+      tickets.push({ cat, pri, desc });
+      localStorage.setItem("tickets", JSON.stringify(tickets));
+      renderTickets();
+      document.getElementById("description").value = "";
     }
 
     function renderTickets() {
-      const list = document.getElementById('ticketList');
-      list.innerHTML = "";
+      const list = document.getElementById("ticketList");
       const tickets = JSON.parse(localStorage.getItem("tickets") || "[]");
-      tickets.forEach(t => {
-        const div = document.createElement('div');
-        div.innerHTML = `<strong>${t.title}</strong> [${t.cat}] (${t.pri})<br>${t.details}<br><small>${t.date}</small><hr>`;
+      list.innerHTML = "";
+      tickets.reverse().forEach(t => {
+        const div = document.createElement("div");
+        div.className = "ticket";
+        div.innerHTML = `<strong>${t.cat}</strong> | Priority: ${t.pri}<br>${t.desc}`;
         list.appendChild(div);
       });
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      location.href = "login.html";
     }
 
     renderTickets();
