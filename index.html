@@ -2,59 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Divya Samal Care App</title>
-  <link rel="stylesheet" href="style.css"/>
+  <title>Home - Divya Samal Care App</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f0f2f5; }
+    header { background-color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px #ccc; }
+    nav a { margin: 0 1rem; text-decoration: none; color: #e91e63; font-weight: bold; }
+    .widget { background: #fff; padding: 1rem; border-radius: 0.5rem; margin: 2rem auto; box-shadow: 0 0 10px #ddd; max-width: 600px; }
+    .widget input, .widget button { padding: 0.5rem; margin: 0.5rem 0; width: 100%; }
+    .widget button { background: #e91e63; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    ul { padding-left: 1.2rem; }
+  </style>
 </head>
 <body>
   <header>
-    <h1>Divya Samal Care App</h1>
-    <p class="tagline">Dibbu's special place</p>
+    <h2>Dibbu & Bimu 💞 Dashboard</h2>
     <nav>
-      <a href="index.html">Dashboard</a>
+      <a href="index.html">Home</a>
+      <a href="journal.html">Journals</a>
+      <a href="tickets.html">Support</a>
       <a href="memories.html">Memories</a>
-      <a href="journal.html">Journal</a>
-      <a href="support.html">Support</a>
-      <a href="games.html">Games</a>
     </nav>
   </header>
-  <main>
-    <section class="welcome">
-      <h2>Welcome back, Love! 💕</h2>
-      <p>Ready for some fun? Choose your adventure below!</p>
-      <p><strong>Online</strong> Last login: 6/15/2025</p>
-    </section>
-    <section class="stats">
-      <div>0<br><span>Games Played</span></div>
-      <div>0<br><span>Memories Saved</span></div>
-      <div>0<br><span>Personal Notes</span></div>
-      <div>0<br><span>Open Tickets</span></div>
-    </section>
-    <section class="widgets">
-      <div class="widget">
-        <h3>Fun & Games</h3>
-        <p>Interactive games and entertainment</p>
-        <ul>
-          <li>🎮 Love Quiz</li>
-          <li>🖌️ Drawing Board</li>
-        </ul>
-      </div>
-      <div class="widget">
-        <h3>Our Memories</h3>
-        <p>Photos and special moments</p>
-        <div class="memory-thumbs">
-          <img src="https://placekitten.com/100/60" />
-          <img src="https://placekitten.com/101/60" />
-        </div>
-        <button class="memory-btn">+ Add New Memory</button>
-      </div>
-      <div class="widget">
-        <h3>Personal Journal</h3>
-        <p>Your thoughts and notes</p>
-        <p><strong>Today's Thoughts</strong><br>Had the most amazing day today…<br><small>2 hours ago</small></p>
-        <button class="journal-btn">✍️ Write New Entry</button>
-      </div>
-    </section>
-  </main>
+
+  <div class="widget">
+    <h3>📅 Calendar & Reminders</h3>
+    <input type="date" id="calendarDate" />
+    <input type="text" id="calendarText" placeholder="Event or reminder" />
+    <button onclick="addEvent()">Add Reminder</button>
+    <ul id="eventList"></ul>
+  </div>
+
+  <div class="widget">
+    <h3>✅ To-Do List</h3>
+    <input type="text" id="todoText" placeholder="Add a task" />
+    <button onclick="addTodo()">Add Task</button>
+    <ul id="todoList"></ul>
+  </div>
+
+  <script>
+    if (Notification.permission !== "granted") Notification.requestPermission();
+
+    const addEvent = () => {
+      const date = document.getElementById('calendarDate').value;
+      const text = document.getElementById('calendarText').value;
+      if (date && text) {
+        const events = JSON.parse(localStorage.getItem("events") || "[]");
+        events.push({ date, text });
+        localStorage.setItem("events", JSON.stringify(events));
+        renderEvents();
+        new Notification("Reminder added", { body: text });
+        document.getElementById('calendarText').value = "";
+      }
+    };
+
+    const renderEvents = () => {
+      const list = document.getElementById('eventList');
+      list.innerHTML = "";
+      const events = JSON.parse(localStorage.getItem("events") || "[]");
+      events.forEach(e => {
+        const li = document.createElement('li');
+        li.textContent = `${e.date}: ${e.text}`;
+        list.appendChild(li);
+      });
+    };
+
+    const addTodo = () => {
+      const text = document.getElementById('todoText').value;
+      if (text) {
+        const todos = JSON.parse(localStorage.getItem("todos") || "[]");
+        todos.push(text);
+        localStorage.setItem("todos", JSON.stringify(todos));
+        renderTodos();
+        new Notification("Task added", { body: text });
+        document.getElementById('todoText').value = "";
+      }
+    };
+
+    const renderTodos = () => {
+      const list = document.getElementById('todoList');
+      list.innerHTML = "";
+      const todos = JSON.parse(localStorage.getItem("todos") || "[]");
+      todos.forEach(task => {
+        const li = document.createElement('li');
+        li.textContent = task;
+        list.appendChild(li);
+      });
+    };
+
+    renderEvents();
+    renderTodos();
+  </script>
 </body>
 </html>
