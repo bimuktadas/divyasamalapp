@@ -11,7 +11,9 @@
     .nav a { margin: 0 1rem; text-decoration: none; font-weight: bold; }
     .container { padding: 2rem; }
     .memories { display: flex; flex-wrap: wrap; gap: 1rem; }
-    .memories img { width: 150px; height: 150px; object-fit: cover; border-radius: 1rem; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+    .memories div { text-align: center; }
+    .memories img { width: 150px; height: 150px; object-fit: cover; border-radius: 1rem; box-shadow: 0 0 5px rgba(0,0,0,0.2); display: block; margin: 0 auto; }
+    .memories small { color: #555; margin-top: 0.3rem; display: block; }
     input[type="file"] { margin-top: 1rem; }
   </style>
 </head>
@@ -37,24 +39,34 @@
     function uploadImage(event) {
       const file = event.target.files[0];
       if (!file) return;
+      const loggedInUser = localStorage.getItem("loggedInUser") || "unknown";
+
       const reader = new FileReader();
       reader.onload = function(e) {
-        const images = JSON.parse(localStorage.getItem("memories") || "[]");
-        images.push(e.target.result);
-        localStorage.setItem("memories", JSON.stringify(images));
+        const memories = JSON.parse(localStorage.getItem("memories") || "[]");
+        memories.push({ src: e.target.result, user: loggedInUser });
+        localStorage.setItem("memories", JSON.stringify(memories));
         renderImages();
       };
       reader.readAsDataURL(file);
     }
 
     function renderImages() {
-      const images = JSON.parse(localStorage.getItem("memories") || "[]");
+      const memories = JSON.parse(localStorage.getItem("memories") || "[]");
       const container = document.getElementById("memoriesList");
       container.innerHTML = "";
-      images.forEach(src => {
+      memories.forEach(({ src, user }) => {
+        const div = document.createElement("div");
+
         const img = document.createElement("img");
         img.src = src;
-        container.appendChild(img);
+
+        const label = document.createElement("small");
+        label.textContent = `Uploaded by: ${user}`;
+
+        div.appendChild(img);
+        div.appendChild(label);
+        container.appendChild(div);
       });
     }
 
