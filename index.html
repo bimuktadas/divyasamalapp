@@ -2,96 +2,166 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Home - Divya Samal Care App</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Dibbu & Bimu Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f0f2f5; }
-    header { background-color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px #ccc; }
-    nav a { margin: 0 1rem; text-decoration: none; color: #e91e63; font-weight: bold; }
-    .widget { background: #fff; padding: 1rem; border-radius: 0.5rem; margin: 2rem auto; box-shadow: 0 0 10px #ddd; max-width: 600px; }
-    .widget input, .widget button { padding: 0.5rem; margin: 0.5rem 0; width: 100%; }
-    .widget button { background: #e91e63; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    ul { padding-left: 1.2rem; }
+    body {
+      font-family: 'Quicksand', sans-serif;
+      margin: 0;
+      background: #fff0f5;
+      color: #333;
+    }
+
+    .header {
+      background: #ff6fa3;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+    }
+
+    .nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+
+    .nav a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .widget-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .widget {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      font-family: inherit;
+    }
+
+    ul {
+      padding-left: 1.2rem;
+    }
+
+    input[type="text"] {
+      padding: 0.5rem;
+      width: 80%;
+    }
+
+    button {
+      padding: 0.5rem;
+      margin-left: 0.5rem;
+      background: #ff6fa3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #e0558d;
+    }
+
+    .quick-links a {
+      display: inline-block;
+      margin-right: 1rem;
+      padding: 0.5rem 1rem;
+      background: #ffd3e0;
+      color: #333;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .quick-links a:hover {
+      background: #ffc0cb;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h2>Dibbu & Bimu 💞 Dashboard</h2>
-    <nav>
+  <div class="header">
+    <h2>💖 Dibbu & Bimu Dashboard 💖</h2>
+    <div class="nav">
       <a href="index.html">Home</a>
       <a href="journal.html">Journals</a>
-      <a href="support.html">Support</a>
       <a href="memories.html">Memories</a>
-    </nav>
-  </header>
-
-  <div class="widget">
-    <h3>📅 Calendar & Reminders</h3>
-    <input type="date" id="calendarDate" />
-    <input type="text" id="calendarText" placeholder="Event or reminder" />
-    <button onclick="addEvent()">Add Reminder</button>
-    <ul id="eventList"></ul>
+      <a href="tickets.html">Tickets</a>
+      <a href="support.html">Support</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
   </div>
 
-  <div class="widget">
-    <h3>✅ To-Do List</h3>
-    <input type="text" id="todoText" placeholder="Add a task" />
-    <button onclick="addTodo()">Add Task</button>
-    <ul id="todoList"></ul>
+  <div class="container">
+    <h1>Hi <span id="username"></span>! 🥰 Welcome back!</h1>
+
+    <div class="quick-links">
+      <p>📌 Quick Links:</p>
+      <a href="journal.html">📝 Journal</a>
+      <a href="memories.html">📸 Memories</a>
+      <a href="tickets.html">🎫 Tickets</a>
+    </div>
+
+    <div class="widget-grid">
+      <div class="widget">
+        <h3>🗓️ Calendar</h3>
+        <input type="date" /> <br/><br/>
+        <input type="text" placeholder="Event/Reminder" />
+        <button>Add</button>
+      </div>
+
+      <div class="widget">
+        <h3>✅ To-Do List</h3>
+        <input type="text" id="todoInput" placeholder="Add task" />
+        <button onclick="addTodo()">Add</button>
+        <ul id="todoList"></ul>
+      </div>
+    </div>
   </div>
 
   <script>
-    if (Notification.permission !== "granted") Notification.requestPermission();
+    if (!localStorage.getItem("loggedInUser")) {
+      location.href = "login.html";
+    }
 
-    const addEvent = () => {
-      const date = document.getElementById('calendarDate').value;
-      const text = document.getElementById('calendarText').value;
-      if (date && text) {
-        const events = JSON.parse(localStorage.getItem("events") || "[]");
-        events.push({ date, text });
-        localStorage.setItem("events", JSON.stringify(events));
-        renderEvents();
-        new Notification("Reminder added", { body: text });
-        document.getElementById('calendarText').value = "";
-      }
-    };
+    const username = localStorage.getItem("loggedInUser");
+    document.getElementById("username").textContent = username.charAt(0).toUpperCase() + username.slice(1);
 
-    const renderEvents = () => {
-      const list = document.getElementById('eventList');
-      list.innerHTML = "";
-      const events = JSON.parse(localStorage.getItem("events") || "[]");
-      events.forEach(e => {
-        const li = document.createElement('li');
-        li.textContent = `${e.date}: ${e.text}`;
-        list.appendChild(li);
-      });
-    };
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      location.href = "login.html";
+    }
 
-    const addTodo = () => {
-      const text = document.getElementById('todoText').value;
-      if (text) {
-        const todos = JSON.parse(localStorage.getItem("todos") || "[]");
-        todos.push(text);
-        localStorage.setItem("todos", JSON.stringify(todos));
-        renderTodos();
-        new Notification("Task added", { body: text });
-        document.getElementById('todoText').value = "";
-      }
-    };
-
-    const renderTodos = () => {
-      const list = document.getElementById('todoList');
-      list.innerHTML = "";
-      const todos = JSON.parse(localStorage.getItem("todos") || "[]");
-      todos.forEach(task => {
-        const li = document.createElement('li');
-        li.textContent = task;
-        list.appendChild(li);
-      });
-    };
-
-    renderEvents();
-    renderTodos();
+    function addTodo() {
+      const input = document.getElementById("todoInput");
+      if (input.value.trim() === "") return;
+      const li = document.createElement("li");
+      li.textContent = input.value + " ✅";
+      document.getElementById("todoList").appendChild(li);
+      input.value = "";
+    }
   </script>
 </body>
 </html>
