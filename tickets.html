@@ -9,10 +9,56 @@
     .header, .nav a { background: #ff6fa3; color: white; }
     .header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
     .nav a { margin: 0 1rem; text-decoration: none; font-weight: bold; }
-    .container { padding: 2rem; }
-    select, textarea { width: 100%; padding: 0.5rem; margin-top: 1rem; font-family: inherit; }
-    button { margin-top: 1rem; padding: 0.5rem 1rem; background: #ff6fa3; color: white; border: none; border-radius: 6px; }
-    .ticket { background: #fff; padding: 1rem; margin-top: 1rem; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .container { padding: 2rem; max-width: 700px; margin: auto; }
+    select, textarea, input[type="text"] {
+      width: 100%; padding: 0.5rem; margin-top: 1rem; font-family: inherit; box-sizing: border-box;
+      border-radius: 6px; border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 1rem; padding: 0.5rem 1rem; background: #ff6fa3; color: white; border: none; border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff4f7b;
+    }
+    .ticket {
+      background: #fff; padding: 1rem; margin-top: 1rem; border-radius: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .ticket-header {
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+      color: #ff4f7b;
+    }
+    .ticket-user {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 0.8rem;
+    }
+    .comments {
+      margin-top: 1rem;
+      border-top: 1px solid #eee;
+      padding-top: 0.8rem;
+    }
+    .comment {
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .comment-user {
+      font-weight: bold;
+      color: #ff6fa3;
+      margin-right: 0.3rem;
+    }
+    .comment-input {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    .comment-input textarea {
+      flex-grow: 1;
+      resize: vertical;
+      height: 50px;
+    }
   </style>
 </head>
 <body>
@@ -56,23 +102,77 @@
       const cat = document.getElementById("category").value;
       const pri = document.getElementById("priority").value;
       const desc = document.getElementById("description").value.trim();
-      if (!desc) return;
+      if (!desc) {
+        alert("Please enter a complaint description.");
+        return;
+      }
+
+      const loggedInUser = localStorage.getItem("loggedInUser") || "unknown";
 
       const tickets = JSON.parse(localStorage.getItem("tickets") || "[]");
-      tickets.push({ cat, pri, desc });
+      tickets.push({
+        cat,
+        pri,
+        desc,
+        createdBy: loggedInUser,
+        comments: []
+      });
       localStorage.setItem("tickets", JSON.stringify(tickets));
       renderTickets();
       document.getElementById("description").value = "";
+    }
+
+    function addComment(ticketIndex) {
+      const commentInput = document.getElementById(`commentInput-${ticketIndex}`);
+      const commentText = commentInput.value.trim();
+      if (!commentText) return alert("Please enter a comment.");
+
+      const loggedInUser = localStorage.getItem("loggedInUser") || "unknown";
+      const tickets = JSON.parse(localStorage.getItem("tickets") || "[]");
+
+      tickets[ticketIndex].comments.push({
+        user: loggedInUser,
+        text: commentText
+      });
+
+      localStorage.setItem("tickets", JSON.stringify(tickets));
+      renderTickets();
     }
 
     function renderTickets() {
       const list = document.getElementById("ticketList");
       const tickets = JSON.parse(localStorage.getItem("tickets") || "[]");
       list.innerHTML = "";
-      tickets.reverse().forEach(t => {
+
+      // Show newest first
+      tickets.slice().reverse().forEach((t, revIndex) => {
+        // Because we reversed, actual index in tickets array is:
+        const ticketIndex = tickets.length - 1 - revIndex;
+
         const div = document.createElement("div");
         div.className = "ticket";
-        div.innerHTML = `<strong>${t.cat}</strong> | Priority: ${t.pri}<br>${t.desc}`;
+
+        div.innerHTML = `
+          <div class="ticket-header">${t.cat} | Priority: ${t.pri}</div>
+          <div class="ticket-user">Raised by: ${t.createdBy}</div>
+          <div>${t.desc.replace(/\n/g, "<br>")}</div>
+          <div class="comments">
+            <strong>Comments:</strong>
+            <div id="comments-${ticketIndex}">
+              ${t.comments.map(c => `
+                <div class="comment">
+                  <span class="comment-user">${c.user}:</span>
+                  <span class="comment-text">${c.text.replace(/\n/g, "<br>")}</span>
+                </div>
+              `).join("")}
+            </div>
+            <div class="comment-input">
+              <textarea id="commentInput-${ticketIndex}" placeholder="Add a comment..."></textarea>
+              <button onclick="addComment(${ticketIndex})">Send</button>
+            </div>
+          </div>
+        `;
+
         list.appendChild(div);
       });
     }
