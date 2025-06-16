@@ -9,12 +9,69 @@
     .header, .nav a { background: #ff6fa3; color: white; }
     .header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
     .nav a { margin: 0 1rem; text-decoration: none; font-weight: bold; }
-    .container { padding: 2rem; }
-    .memories { display: flex; flex-wrap: wrap; gap: 1rem; }
-    .memories div { text-align: center; }
-    .memories img { width: 150px; height: 150px; object-fit: cover; border-radius: 1rem; box-shadow: 0 0 5px rgba(0,0,0,0.2); display: block; margin: 0 auto; }
-    .memories small { color: #555; margin-top: 0.3rem; display: block; }
-    input[type="file"] { margin-top: 1rem; }
+    .container { padding: 2rem; max-width: 900px; margin: auto; }
+    .upload-section { margin-bottom: 2rem; }
+    input[type="file"], input[type="text"] { margin-top: 1rem; padding: 0.5rem; font-family: inherit; width: 100%; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; }
+    button { margin-top: 0.75rem; padding: 0.5rem 1rem; background: #ff6fa3; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    button:hover { background: #e0558d; }
+    .memories { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
+    .memory-card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 0 5px rgba(0,0,0,0.15);
+      padding: 1rem;
+      width: 250px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .memory-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 1rem;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+    .caption {
+      margin-top: 0.75rem;
+      font-weight: 600;
+      color: #444;
+      text-align: center;
+    }
+    .uploaded-by {
+      font-size: 0.85rem;
+      color: #888;
+      margin-top: 0.25rem;
+    }
+    .comments-section {
+      width: 100%;
+      margin-top: 1rem;
+      border-top: 1px solid #eee;
+      padding-top: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .comment {
+      margin-bottom: 0.5rem;
+    }
+    .comment strong {
+      color: #ff6fa3;
+    }
+    .add-comment {
+      display: flex;
+      margin-top: 0.5rem;
+      gap: 0.5rem;
+    }
+    .add-comment input {
+      flex: 1;
+      padding: 0.4rem 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+    .add-comment button {
+      padding: 0.4rem 0.8rem;
+      font-weight: normal;
+    }
   </style>
 </head>
 <body>
@@ -30,22 +87,48 @@
   </div>
 
   <div class="container">
-    <h3>Upload your sweet moments 💖</h3>
-    <input type="file" accept="image/*" onchange="uploadImage(event)" />
+    <div class="upload-section">
+      <h3>Upload your sweet moments 💖</h3>
+      <input type="file" accept="image/*" id="imageInput" />
+      <input type="text" id="captionInput" placeholder="Add a caption for your memory..." />
+      <button onclick="uploadImage()">Upload Memory</button>
+    </div>
+
     <div class="memories" id="memoriesList"></div>
   </div>
 
   <script>
-    function uploadImage(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const loggedInUser = localStorage.getItem("loggedInUser") || "unknown";
+    // Get logged-in user from localStorage
+    const loggedInUser = localStorage.getItem("loggedInUser") || "unknown";
+
+    function uploadImage() {
+      const fileInput = document.getElementById("imageInput");
+      const captionInput = document.getElementById("captionInput");
+      const file = fileInput.files[0];
+      const caption = captionInput.value.trim();
+
+      if (!file) {
+        alert("Please select an image to upload!");
+        return;
+      }
+
+      if (!caption) {
+        alert("Please add a caption for your memory!");
+        return;
+      }
 
       const reader = new FileReader();
       reader.onload = function(e) {
         const memories = JSON.parse(localStorage.getItem("memories") || "[]");
-        memories.push({ src: e.target.result, user: loggedInUser });
+        memories.push({
+          src: e.target.result,
+          user: loggedInUser,
+          caption: caption,
+          comments: [] // empty comments array initially
+        });
         localStorage.setItem("memories", JSON.stringify(memories));
+        fileInput.value = "";
+        captionInput.value = "";
         renderImages();
       };
       reader.readAsDataURL(file);
@@ -55,17 +138,69 @@
       const memories = JSON.parse(localStorage.getItem("memories") || "[]");
       const container = document.getElementById("memoriesList");
       container.innerHTML = "";
-      memories.forEach(({ src, user }) => {
+
+      memories.forEach((memory, index) => {
         const div = document.createElement("div");
+        div.className = "memory-card";
 
+        // Image
         const img = document.createElement("img");
-        img.src = src;
+        img.src = memory.src;
 
-        const label = document.createElement("small");
-        label.textContent = `Uploaded by: ${user}`;
+        // Caption
+        const caption = document.createElement("div");
+        caption.className = "caption";
+        caption.textContent = memory.caption;
 
+        // Uploaded by
+        const uploadedBy = document.createElement("div");
+        uploadedBy.className = "uploaded-by";
+        uploadedBy.textContent = `Uploaded by: ${memory.user}`;
+
+        // Comments section container
+        const commentsSection = document.createElement("div");
+        commentsSection.className = "comments-section";
+
+        // Render existing comments
+        memory.comments.forEach(comment => {
+          const cDiv = document.createElement("div");
+          cDiv.className = "comment";
+          cDiv.innerHTML = `<strong>${comment.user}:</strong> ${comment.text}`;
+          commentsSection.appendChild(cDiv);
+        });
+
+        // Add comment input and button
+        const addCommentDiv = document.createElement("div");
+        addCommentDiv.className = "add-comment";
+
+        const commentInput = document.createElement("input");
+        commentInput.type = "text";
+        commentInput.placeholder = "Add a comment...";
+        commentInput.setAttribute("aria-label", "Add a comment");
+
+        const commentBtn = document.createElement("button");
+        commentBtn.textContent = "Post";
+        commentBtn.onclick = () => {
+          const commentText = commentInput.value.trim();
+          if (!commentText) return alert("Comment cannot be empty");
+
+          // Update memory comments in localStorage
+          memories[index].comments.push({ user: loggedInUser, text: commentText });
+          localStorage.setItem("memories", JSON.stringify(memories));
+          renderImages(); // re-render to show new comment
+        };
+
+        addCommentDiv.appendChild(commentInput);
+        addCommentDiv.appendChild(commentBtn);
+
+        commentsSection.appendChild(addCommentDiv);
+
+        // Append all to card
         div.appendChild(img);
-        div.appendChild(label);
+        div.appendChild(caption);
+        div.appendChild(uploadedBy);
+        div.appendChild(commentsSection);
+
         container.appendChild(div);
       });
     }
@@ -75,6 +210,7 @@
       location.href = "login.html";
     }
 
+    // Render existing memories on page load
     renderImages();
   </script>
 </body>
