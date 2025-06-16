@@ -2,23 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Memories</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Memories - Divya Samal Care App</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .carousel { display: flex; overflow-x: auto; gap: 10px; padding: 1rem; }
+    .carousel img { height: 200px; border-radius: 10px; box-shadow: 0 0 5px #aaa; }
+  </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="memories.html">Memories</a>
-    <a href="journals.html">Journals</a>
-    <a href="tickets.html">Tickets</a>
-  </nav>
-  <h2 style="text-align:center;">Memories Gallery</h2>
-  <div style="text-align:center;">
-    <input type="text" id="memory-caption" placeholder="Caption" />
-    <input type="text" id="memory-url" placeholder="Image URL" />
-    <button onclick="addMemory()">Add Memory</button>
+  <header>
+    <h2>Our Memories 📸</h2>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="journal.html">Journals</a>
+      <a href="tickets.html">Support</a>
+    </nav>
+  </header>
+
+  <div class="widget">
+    <input type="file" id="imageUpload" accept="image/*" multiple />
+    <div class="carousel" id="carousel"></div>
   </div>
-  <div id="memory-gallery" class="grid"></div>
-  <script src="script.js"></script>
+
+  <script>
+    const imageUpload = document.getElementById('imageUpload');
+    const carousel = document.getElementById('carousel');
+
+    imageUpload.addEventListener('change', () => {
+      [...imageUpload.files].forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.createElement('img');
+          img.src = reader.result;
+          carousel.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  </script>
 </body>
 </html>
